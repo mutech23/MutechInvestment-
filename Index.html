@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MUTECH — Full Demo Investment Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ========================== Global Styles ========================== */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:#0a0e27;color:#fff;line-height:1.6;overflow-x:hidden;min-height:100vh;}
+a{color:#fff;text-decoration:none;}
+.hidden{display:none !important;}
+.container{position:relative;z-index:1;padding:1rem;max-width:1200px;margin:0 auto;}
+canvas#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+/* ========================== Nav ========================== */
+nav{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);box-shadow:0 10px 30px rgba(102,126,234,0.3);position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;border-radius:8px;margin-bottom:1rem;}
+.nav-left h1{font-size:1.5rem;} 
+.nav-left .tag{font-size:0.8rem;color:rgba(255,255,255,0.7);}
+.nav-right button{margin-left:0.5rem;}
+.username{margin-right:0.5rem;font-weight:600;}
+
+/* ========================== Buttons ========================== */
+.btn{cursor:pointer;border:none;border-radius:0.75rem;padding:0.6rem 1.2rem;font-weight:600;transition:all 0.3s ease;position:relative;overflow:hidden;}
+.btn-primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;}
+.btn-primary::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.2);transform:translate(-50%,-50%);transition:width 0.6s,height 0.6s;}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(102,126,234,0.5);}
+.btn-primary:hover::before{width:300px;height:300px;}
+.btn-outline{background:transparent;color:white;border:1px solid rgba(255,255,255,0.5);}
+.btn-ghost{background:transparent;color:white;}
+.admin-badge{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);animation:glow 2s ease-in-out infinite;color:white;padding:0.5rem 1rem;border-radius:8px;}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(240,147,251,0.5);}50%{box-shadow:0 0 30px rgba(245,87,108,0.7);}}
+
+/* ========================== Cards & Glass ========================== */
+.card{background:rgba(255,255,255,0.05);padding:1rem;margin-bottom:1rem;border-radius:12px;backdrop-filter:blur(10px);}
+.glass-effect{background:rgba(255,255,255,0.08);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,0.15);}
+.card-3d{transform-style:preserve-3d;transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);position:relative;}
+.card-3d:hover{transform:translateY(-8px) rotateX(5deg) scale(1.02);box-shadow:0 20px 40px rgba(102,126,234,0.4);}
+.card-3d::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);border-radius:inherit;opacity:0;transition:opacity 0.3s ease;}
+.card-3d:hover::before{opacity:1;}
+
+/* ========================== Forms & Inputs ========================== */
+input, select, textarea{width:100%;padding:0.5rem;margin-bottom:0.75rem;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:white;outline:none;}
+input:focus, select:focus, textarea:focus{background:rgba(255,255,255,0.08);border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.2);}
+.muted{color:rgba(255,255,255,0.6);}
+.big{font-size:1.25rem;font-weight:600;}
+
+/* ========================== Tables ========================== */
+.table-wrap{overflow-x:auto;margin-top:1rem;}
+table{width:100%;border-collapse:collapse;}
+th, td{padding:0.75rem;border-bottom:1px solid rgba(255,255,255,0.05);}
+thead{background:rgba(255,255,255,0.05);position:sticky;top:0;}
+tbody tr:hover{background:rgba(102,126,234,0.1);}
+
+/* ========================== Plans ========================== */
+.plans{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem;}
+.plan{flex:1 1 120px;background:rgba(255,255,255,0.05);padding:0.75rem;border-radius:10px;text-align:center;}
+
+/* ========================== Deposit Box ========================== */
+.deposit-actions{display:flex;gap:8px;margin-top:8px;}
+
+/* ========================== Modals ========================== */
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;padding:1rem;z-index:200;}
+.modal-card{background:rgba(255,255,255,0.05);padding:1rem;border-radius:12px;max-width:500px;width:100%;position:relative;}
+.modal header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+.btn-close{background:transparent;color:white;font-size:1.2rem;padding:0;cursor:pointer;}
+
+/* ========================== Dashboard ========================== */
+#dashboard .wallet-stats{display:flex;gap:1rem;margin-bottom:1rem;}
+#dashboard .wallet-stats div{flex:1;background:rgba(255,255,255,0.05);padding:0.5rem;border-radius:8px;text-align:center;}
+.actions{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+.actions button{flex:1 1 100px;}
+
+/* ========================== Admin ========================== */
+#admin-panel .admin-stats{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;}
+
+/* ========================== Responsive ========================== */
+@media(max-width:576px){.plans{flex-direction:column;}.card{padding:0.75rem;}.btn{padding:0.5rem 1rem;font-size:0.85rem;}.actions{flex-direction:column;}}
+</style>
+
+<script src="https://unpkg.com/three@0.161.0/build/three.min.js" defer></script>
+<script defer>
+document.addEventListener("DOMContentLoaded",()=>{
+
+// ====== GLOBAL VARIABLES ======
+let currentUser=null;
+let users=[{email:"admin@mutech.demo",password:"Admin123!",role:"admin"}];
+let investments=[];
+let referrals=[];
+
+// ====== COPY ACCOUNT ======
+document.getElementById("copyAcctBtn")?.addEventListener("click",()=>{
+navigator.clipboard.writeText(document.getElementById("acctNum").innerText).then(()=>{
+const msg=document.getElementById("copyMsg");msg.style.display="block";setTimeout(()=>msg.style.display="none",2000);
+});});
+
+// ====== MODALS ======
+const modalMap={"login-btn":"login-modal","register-btn":"register-modal","open-deposit-modal":"deposit-modal","deposit-btn":"deposit-modal","withdraw-btn":"withdraw-modal","invest-btn":"invest-modal","referral-btn":"referral-modal"};
+Object.keys(modalMap).forEach(btnId=>{
+const modalId=modalMap[btnId];
+document.getElementById(btnId)?.addEventListener("click",()=>{document.getElementById(modalId).classList.remove("hidden");});
+});
+document.querySelectorAll(".btn-close").forEach(btn=>{btn.addEventListener("click",()=>{btn.closest(".modal").classList.add("hidden");});});
+
+// ====== SWITCH LOGIN/REGISTER ======
+document.getElementById("switch-to-register")?.addEventListener("click",e=>{e.preventDefault();document.getElementById("login-modal").classList.add("hidden");document.getElementById("register-modal").classList.remove("hidden");});
+document.getElementById("switch-to-login")?.addEventListener("click",e=>{e.preventDefault();document.getElementById("register-modal").classList.add("hidden");document.getElementById("login-modal").classList.remove("hidden");});
+
+// ====== DEPOSIT IMAGE PREVIEW ======
+const depositProof=document.getElementById("deposit-proof"),depositPreview=document.getElementById("deposit-preview");
+depositProof?.addEventListener("change",e=>{const file=e.target.files[0];if(file){const reader=new FileReader();reader.onload=evt=>{depositPreview.innerHTML=`<img src="${evt.target.result}" style="max-width:100%;border-radius:8px;">`;};reader.readAsDataURL(file);}});
+
+// ====== INVEST PLAN BUTTON ======
+document.querySelectorAll(".invest-plan-btn").forEach(btn=>{btn.addEventListener("click",()=>{document.getElementById("invest-plan-select").value=btn.dataset.plan;document.getElementById("invest-modal").classList.remove("hidden");});});
+
+// ====== LOGIN & REGISTER ======
+document.getElementById("login-modal")?.querySelector("form").addEventListener("submit",e=>{
+e.preventDefault();
+const email=e.target[0].value,password=e.target[1].value;
+const user=users.find(u=>u.email===email && u.password===password);
+if(user){currentUser=user;alert("Login successful!");
+document.getElementById("login-modal").classList.add("hidden");
+document.querySelector(".nav-right").innerHTML=`<span class="username">${currentUser.email}</span><button id="logout-btn" class="btn btn-ghost">Logout</button>${currentUser.role==="admin"?'<button id="admin-panel-btn" class="btn admin-badge">Admin</button>':''}`;
+document.getElementById("dashboard")?.classList.remove("hidden");
+document.getElementById("admin-panel")?.classList.toggle("hidden",currentUser.role!=="admin");
+document.getElementById("logout-btn").addEventListener("click",()=>location.reload());
+if(currentUser.role==="admin"){document.getElementById("admin-panel-btn").addEventListener("click",()=>{document.getElementById("admin-panel").classList.toggle("hidden");});}}else{alert("Invalid credentials");}});
+
+document.getElementById("register-modal")?.querySelector("form").addEventListener("submit",e=>{
+e.preventDefault();
+const email=e.target[0].value,password=e.target[1].value;
+if(users.find(u=>u.email===email)){alert("User already exists");return;}
+const user={email,password,role:"user"};users.push(user);alert("Registration successful, login now");document.getElementById("register-modal").classList.add("hidden");document.getElementById("login-modal").classList.remove("hidden");
+});
+
+// ====== PARTICLE BACKGROUND ======
+const canvas=document.getElementById("bg-canvas");
+if(canvas&&window.THREE){const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);const renderer=new THREE.WebGLRenderer({canvas,alpha:true});renderer.setSize(window.innerWidth,window.innerHeight);camera.position.z=5;const geometry=new THREE.BufferGeometry();const vertices=[];for(let i=0;i<1000;i++){vertices.push((Math.random()-0.5)*20,(Math.random()-0.5)*20,(Math.random()-0.5)*20);}geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));const material=new THREE.PointsMaterial({color:0xffffff,size:0.05});const points=new THREE.Points(geometry,material);scene.add(points);const animate=()=>{requestAnimationFrame(animate);points.rotation.x+=0.001;points.rotation.y+=0.001;renderer.render(scene,camera);};animate();}
+});
+</script>
+</head>
+
+<body>
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+<div class="container">
+  <nav>
+    <div class="nav-left"><h1>MUTECH</h1><small class="tag">Investment Platform</small></div>
+    <div class="nav-right">
+      <button id="login-btn" class="btn btn-primary">Login</button>
+      <button id="register-btn" class="btn btn-outline">Register</button>
+    </div>
+  </nav>
+
+  <!-- LANDING -->
+  <section class="card">
+    <h2>Welcome to MUTECH</h2>
+    <p class="muted">Demo investment dashboard. Register to try deposits, investments and referrals. <strong>Do not use real funds.</strong></p>
+
+    <div class="plans">
+      <div class="plan"><h4>Starter</h4><p>₦1,000 – ₦10,000</p><p>ROI: 20%</p><button class="btn invest-plan-btn" data-plan="starter">Choose</button></div>
+      <div class="plan"><h4>Premium</h4><p>₦10,000 – ₦50,000</p><p>ROI: 50%</p><button class="btn invest-plan-btn" data-plan="premium">Choose</button></div>
+      <div class="plan"><h4>Executive</h4><p>₦50,000 – ₦500,000</p><p>ROI: 100%</p><button class="btn invest-plan-btn" data-plan="executive">Choose</button></div>
+    </div>
+
+    <div class="deposit-box card glass-effect">
+      <h3>Deposit Account Details</h3>
+      <p><strong>Bank:</strong> Kuda Bank</p>
+      <p><strong>Account Name:</strong> MUTECH INVESTMENT</p>
+      <p><strong>Account Number:</strong> <span id="acctNum">2014613557</span></p>
+      <div class="deposit-actions">
+        <button id="copyAcctBtn" class="btn btn-primary">Copy Account Number</button>
+        <button id="open-deposit-modal" class="btn btn-outline">Submit Proof / Notify</button>
+      </div>
+      <p id="copyMsg" class="muted small" style="display:none;">Copied ✓</p>
+      <div id="deposit-preview" style="margin-top:8px;"></div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="card hidden">
+    <h2>Dashboard</h2>
+    <div class="wallet-stats">
+      <div><small>Balance</small><div id="wallet-balance" class="big">₦0</div></div>
+      <div><small>Active Investments</small><div id="active-investments" class="big">₦0</div></div>
+      <div><small>Referral</small><div id="referral-earnings" class="big">₦0</div></div>
+    </div>
+    <div class="actions">
+      <button id="deposit-btn" class="btn btn-primary">Deposit / Upload Proof</button>
+      <button id="withdraw-btn" class="btn btn-outline">Withdraw</button>
+      <button id="invest-btn" class="btn btn-primary">Invest</button>
+      <button id="referral-btn" class="btn btn-ghost">Referral</button>
+    </div>
+    <h3>Investment History</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Plan</th><th>Amount</th><th>ROI</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="investment-history"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ADMIN PANEL -->
+  <aside id="admin-panel" class="card hidden">
+    <h2>Admin Panel</h2>
+    <div class="admin-stats">
+      <div>Total users: <span id="admin-total-users">0</span></div>
+      <div>Total investments: <span id="admin-total-investments">0</span></div>
+      <div>Pending deposits: <span id="admin-pending-deposits">0</span></div>
+      <div>Pending withdrawals: <span id="admin-pending-withdrawals">0</span></div>
+    <h4>Pending Deposits</h4>
+    <div id="admin-pending-deposits-list"></div>
+
+    <h4 style="margin-top:12px">Pending Withdrawals</h4>
+    <div id="admin-pending-withdrawals-list"></div>
+
+    <h4 style="margin-top:12px">Activity (latest)</h4>
+    <div class="table-wrap small">
+      <table>
+        <thead><tr><th>User</th><th>Action</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="admin-activity-log"></tbody>
+      </table>
+    </div>
+  </aside>
+</div>
+
+<!-- ====================== Modals ====================== -->
+<!-- Login Modal -->
+<div id="login-modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <header><h3>Login</h3><button class="btn-close" id="close-login">✕</button></header>
+    <form id="login-form" class="form">
+      <label>Email</label>
+      <input type="email" required />
+      <label>Password</label>
+      <input type="password" required />
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Login</button>
+        <a href="#" id="switch-to-register" class="link">Create account</a>
+      </div>
+    </form>
+    <p class="muted small">Admin: <strong>admin@mutech.demo</strong> / Password: <strong>Admin123!</strong></p>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div id="register-modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <header><h3>Register</h3><button class="btn-close" id="close-register">✕</button></header>
+    <form id="register-form" class="form">
+      <label>Email</label>
+      <input type="email" required />
+      <label>Password</label>
+      <input type="password" required />
+      <label>Referral code (optional)</label>
+      <input />
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Register</button>
+        <a href="#" id="switch-to-login" class="link">Have an account?</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Deposit Modal -->
+<div id="deposit-modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <header><h3>Submit Deposit Proof</h3><button class="btn-close" id="close-deposit">✕</button></header>
+    <div class="form">
+      <p class="muted">Send funds to Kuda Bank • 2014613557 • MUTECH INVESTMENT</p>
+      <label>Amount (₦)</label>
+      <input type="number" min="1" />
+      <label>Upload proof (image)</label>
+      <input type="file" accept="image/*" />
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn btn-primary">Submit proof</button>
+        <button class="btn btn-outline">Cancel</button>
+      </div>
+      <div id="deposit-preview" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Withdraw Modal -->
+<div id="withdraw-modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <header><h3>Request Withdrawal</h3><button class="btn-close" id="close-withdraw">✕</button></header>
+    <form class="form">
+      <label>Amount (₦)</label><input type="number" min="1700" />
+      <label>Bank name</label><input type="text" />
+      <label>Account number</label><input type="text" />
+      <label>Account name</label><input type="text" />
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Request withdrawal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Invest Modal -->
+<div id="invest-modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <header><h3>Make an investment</h3><button class="btn-close" id="close-invest">✕</button></header>
+    <div class="form">
+      <label>Plan</label>
+      <select>
+        <option value="starter">Starter</option>
+        <option value="premium">Premium</option>
+        <option value="executive">Executive</option>
+      </select>
+      <label>Amount (₦)</label>
+      <input type="number" />
+      <div class="form-actions"><button class="btn btn-primary">Invest</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Referral Modal -->
+<div id="referral-modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <header><h3>Referral</h3><button class="btn-close" id="close-referral">✕</button></header>
+    <div class="form">
+      <label>Share link</label>
+      <input readonly value="https://mutech.demo/referral?user=demo" />
+      <p>Earned: ₦<span>0</span></p>
+      <p>Referrals: <span>0</span></p>
+      <div class="form-actions"><button class="btn btn-primary">Copy</button></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
