@@ -1,335 +1,1376 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>MUTECH — Full Demo Investment Platform</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MUTECH Investment Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 <style>
-/* ========================== Global Styles ========================== */
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Poppins',sans-serif;background:#0a0e27;color:#fff;line-height:1.6;overflow-x:hidden;min-height:100vh;}
-a{color:#fff;text-decoration:none;}
-.hidden{display:none !important;}
-.container{position:relative;z-index:1;padding:1rem;max-width:1200px;margin:0 auto;}
-canvas#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+:root {
+  --bg-dark: #0a0e27;
+  --bg-light: #f6f7fb;
+  --card-dark: rgba(255,255,255,0.05);
+  --card-light: #ffffff;
+  --accent1: #667eea;
+  --accent2: #764ba2;
+  --text-light: #ffffff;
+  --text-dark: #1a1a2e;
+}
 
-/* ========================== Nav ========================== */
-nav{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);box-shadow:0 10px 30px rgba(102,126,234,0.3);position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;border-radius:8px;margin-bottom:1rem;}
-.nav-left h1{font-size:1.5rem;} 
-.nav-left .tag{font-size:0.8rem;color:rgba(255,255,255,0.7);}
-.nav-right button{margin-left:0.5rem;}
-.username{margin-right:0.5rem;font-weight:600;}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* ========================== Buttons ========================== */
-.btn{cursor:pointer;border:none;border-radius:0.75rem;padding:0.6rem 1.2rem;font-weight:600;transition:all 0.3s ease;position:relative;overflow:hidden;}
-.btn-primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;}
-.btn-primary::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.2);transform:translate(-50%,-50%);transition:width 0.6s,height 0.6s;}
-.btn-primary:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(102,126,234,0.5);}
-.btn-primary:hover::before{width:300px;height:300px;}
-.btn-outline{background:transparent;color:white;border:1px solid rgba(255,255,255,0.5);}
-.btn-ghost{background:transparent;color:white;}
-.admin-badge{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);animation:glow 2s ease-in-out infinite;color:white;padding:0.5rem 1rem;border-radius:8px;}
-@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(240,147,251,0.5);}50%{box-shadow:0 0 30px rgba(245,87,108,0.7);}}
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
 
-/* ========================== Cards & Glass ========================== */
-.card{background:rgba(255,255,255,0.05);padding:1rem;margin-bottom:1rem;border-radius:12px;backdrop-filter:blur(10px);}
-.glass-effect{background:rgba(255,255,255,0.08);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,0.15);}
-.card-3d{transform-style:preserve-3d;transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);position:relative;}
-.card-3d:hover{transform:translateY(-8px) rotateX(5deg) scale(1.02);box-shadow:0 20px 40px rgba(102,126,234,0.4);}
-.card-3d::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);border-radius:inherit;opacity:0;transition:opacity 0.3s ease;}
-.card-3d:hover::before{opacity:1;}
+body.light-mode {
+  background: var(--bg-light);
+  color: var(--text-dark);
+}
 
-/* ========================== Forms & Inputs ========================== */
-input, select, textarea{width:100%;padding:0.5rem;margin-bottom:0.75rem;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:white;outline:none;}
-input:focus, select:focus, textarea:focus{background:rgba(255,255,255,0.08);border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.2);}
-.muted{color:rgba(255,255,255,0.6);}
-.big{font-size:1.25rem;font-weight:600;}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
 
-/* ========================== Tables ========================== */
-.table-wrap{overflow-x:auto;margin-top:1rem;}
-table{width:100%;border-collapse:collapse;}
-th, td{padding:0.75rem;border-bottom:1px solid rgba(255,255,255,0.05);}
-thead{background:rgba(255,255,255,0.05);position:sticky;top:0;}
-tbody tr:hover{background:rgba(102,126,234,0.1);}
+nav {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
 
-/* ========================== Plans ========================== */
-.plans{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem;}
-.plan{flex:1 1 120px;background:rgba(255,255,255,0.05);padding:0.75rem;border-radius:10px;text-align:center;}
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
-/* ========================== Deposit Box ========================== */
-.deposit-actions{display:flex;gap:8px;margin-top:8px;}
+.logo {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent2);
+  box-shadow: 0 4px 12px rgba(255,215,0,0.3);
+}
 
-/* ========================== Modals ========================== */
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;padding:1rem;z-index:200;}
-.modal-card{background:rgba(255,255,255,0.05);padding:1rem;border-radius:12px;max-width:500px;width:100%;position:relative;}
-.modal header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
-.btn-close{background:transparent;color:white;font-size:1.2rem;padding:0;cursor:pointer;}
+.brand h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
 
-/* ========================== Dashboard ========================== */
-#dashboard .wallet-stats{display:flex;gap:1rem;margin-bottom:1rem;}
-#dashboard .wallet-stats div{flex:1;background:rgba(255,255,255,0.05);padding:0.5rem;border-radius:8px;text-align:center;}
-.actions{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;}
-.actions button{flex:1 1 100px;}
+.brand .tagline {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
 
-/* ========================== Admin ========================== */
-#admin-panel .admin-stats{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;}
+.nav-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
-/* ========================== Responsive ========================== */
-@media(max-width:576px){.plans{flex-direction:column;}.card{padding:0.75rem;}.btn{padding:0.5rem 1rem;font-size:0.85rem;}.actions{flex-direction:column;}}
+.btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: white;
+  box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: white;
+}
+
+.theme-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s;
+}
+
+.card {
+  background: var(--card-dark);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+body.light-mode .card {
+  background: var(--card-light);
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.plan {
+  background: rgba(255,255,255,0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.3s;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.plan:hover {
+  transform: translateY(-5px);
+}
+
+.plan h4 {
+  color: var(--accent1);
+  margin-bottom: 0.5rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.stat-card .label {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent1);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+th {
+  background: rgba(255,255,255,0.05);
+  font-weight: 600;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--bg-dark);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+body.light-mode .modal-content {
+  background: var(--card-light);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  color: inherit;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent1);
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+}
+
+.deposit-box {
+  background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin: 1rem 0;
+  border: 1px solid rgba(102,126,234,0.3);
+}
+
+.deposit-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-item {
+  background: rgba(255,255,255,0.05);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.hidden { display: none !important; }
+.muted { opacity: 0.7; }
+.small { font-size: 0.85rem; }
+.mt-1 { margin-top: 1rem; }
+
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    text-align: center;
+  }
+  .plans, .stats {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
-
-<script src="https://unpkg.com/three@0.161.0/build/three.min.js" defer></script>
-<script defer>
-document.addEventListener("DOMContentLoaded",()=>{
-
-// ====== GLOBAL VARIABLES ======
-let currentUser=null;
-let users=[{email:"admin@mutech.demo",password:"Admin123!",role:"admin"}];
-let investments=[];
-let referrals=[];
-
-// ====== COPY ACCOUNT ======
-document.getElementById("copyAcctBtn")?.addEventListener("click",()=>{
-navigator.clipboard.writeText(document.getElementById("acctNum").innerText).then(()=>{
-const msg=document.getElementById("copyMsg");msg.style.display="block";setTimeout(()=>msg.style.display="none",2000);
-});});
-
-// ====== MODALS ======
-const modalMap={"login-btn":"login-modal","register-btn":"register-modal","open-deposit-modal":"deposit-modal","deposit-btn":"deposit-modal","withdraw-btn":"withdraw-modal","invest-btn":"invest-modal","referral-btn":"referral-modal"};
-Object.keys(modalMap).forEach(btnId=>{
-const modalId=modalMap[btnId];
-document.getElementById(btnId)?.addEventListener("click",()=>{document.getElementById(modalId).classList.remove("hidden");});
-});
-document.querySelectorAll(".btn-close").forEach(btn=>{btn.addEventListener("click",()=>{btn.closest(".modal").classList.add("hidden");});});
-
-// ====== SWITCH LOGIN/REGISTER ======
-document.getElementById("switch-to-register")?.addEventListener("click",e=>{e.preventDefault();document.getElementById("login-modal").classList.add("hidden");document.getElementById("register-modal").classList.remove("hidden");});
-document.getElementById("switch-to-login")?.addEventListener("click",e=>{e.preventDefault();document.getElementById("register-modal").classList.add("hidden");document.getElementById("login-modal").classList.remove("hidden");});
-
-// ====== DEPOSIT IMAGE PREVIEW ======
-const depositProof=document.getElementById("deposit-proof"),depositPreview=document.getElementById("deposit-preview");
-depositProof?.addEventListener("change",e=>{const file=e.target.files[0];if(file){const reader=new FileReader();reader.onload=evt=>{depositPreview.innerHTML=`<img src="${evt.target.result}" style="max-width:100%;border-radius:8px;">`;};reader.readAsDataURL(file);}});
-
-// ====== INVEST PLAN BUTTON ======
-document.querySelectorAll(".invest-plan-btn").forEach(btn=>{btn.addEventListener("click",()=>{document.getElementById("invest-plan-select").value=btn.dataset.plan;document.getElementById("invest-modal").classList.remove("hidden");});});
-
-// ====== LOGIN & REGISTER ======
-document.getElementById("login-modal")?.querySelector("form").addEventListener("submit",e=>{
-e.preventDefault();
-const email=e.target[0].value,password=e.target[1].value;
-const user=users.find(u=>u.email===email && u.password===password);
-if(user){currentUser=user;alert("Login successful!");
-document.getElementById("login-modal").classList.add("hidden");
-document.querySelector(".nav-right").innerHTML=`<span class="username">${currentUser.email}</span><button id="logout-btn" class="btn btn-ghost">Logout</button>${currentUser.role==="admin"?'<button id="admin-panel-btn" class="btn admin-badge">Admin</button>':''}`;
-document.getElementById("dashboard")?.classList.remove("hidden");
-document.getElementById("admin-panel")?.classList.toggle("hidden",currentUser.role!=="admin");
-document.getElementById("logout-btn").addEventListener("click",()=>location.reload());
-if(currentUser.role==="admin"){document.getElementById("admin-panel-btn").addEventListener("click",()=>{document.getElementById("admin-panel").classList.toggle("hidden");});}}else{alert("Invalid credentials");}});
-
-document.getElementById("register-modal")?.querySelector("form").addEventListener("submit",e=>{
-e.preventDefault();
-const email=e.target[0].value,password=e.target[1].value;
-if(users.find(u=>u.email===email)){alert("User already exists");return;}
-const user={email,password,role:"user"};users.push(user);alert("Registration successful, login now");document.getElementById("register-modal").classList.add("hidden");document.getElementById("login-modal").classList.remove("hidden");
-});
-
-// ====== PARTICLE BACKGROUND ======
-const canvas=document.getElementById("bg-canvas");
-if(canvas&&window.THREE){const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);const renderer=new THREE.WebGLRenderer({canvas,alpha:true});renderer.setSize(window.innerWidth,window.innerHeight);camera.position.z=5;const geometry=new THREE.BufferGeometry();const vertices=[];for(let i=0;i<1000;i++){vertices.push((Math.random()-0.5)*20,(Math.random()-0.5)*20,(Math.random()-0.5)*20);}geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));const material=new THREE.PointsMaterial({color:0xffffff,size:0.05});const points=new THREE.Points(geometry,material);scene.add(points);const animate=()=>{requestAnimationFrame(animate);points.rotation.x+=0.001;points.rotation.y+=0.001;renderer.render(scene,camera);};animate();}
-});
-</script>
 </head>
-
 <body>
-<canvas id="bg-canvas" aria-hidden="true"></canvas>
 
 <div class="container">
   <nav>
-    <div class="nav-left"><h1>MUTECH</h1><small class="tag">Investment Platform</small></div>
-    <div class="nav-right">
-      <button id="login-btn" class="btn btn-primary">Login</button>
-      <button id="register-btn" class="btn btn-outline">Register</button>
+    <div class="logo-section">
+      <div class="logo">M</div>
+      <div class="brand">
+        <h1>MUTECH</h1>
+        <div class="tagline">Investment Platform</div>
+      </div>
+    </div>
+    <div class="nav-controls">
+      <button class="theme-btn" id="themeToggle" title="Toggle theme">🌙</button>
+      <div id="authButtons">
+        <button class="btn btn-primary" id="loginBtn">Login</button>
+        <button class="btn btn-outline" id="registerBtn">Register</button>
+      </div>
+      <div id="userInfo" class="hidden">
+        <span id="username"></span>
+        <button class="btn btn-ghost" id="logoutBtn">Logout</button>
+        <button class="btn btn-primary hidden" id="adminBtn">Admin</button>
+      </div>
     </div>
   </nav>
 
-  <!-- LANDING -->
-  <section class="card">
-    <h2>Welcome to MUTECH</h2>
-    <p class="muted">Demo investment dashboard. Register to try deposits, investments and referrals. <strong>Do not use real funds.</strong></p>
+  <section id="landingSection">
+    <div class="card">
+      <h2>Welcome to MUTECH Investment Platform</h2>
+      <p class="muted">Start your investment journey today. Register to explore deposits, investments, and referrals.</p>
 
-    <div class="plans">
-      <div class="plan"><h4>Starter</h4><p>₦1,000 – ₦10,000</p><p>ROI: 20%</p><button class="btn invest-plan-btn" data-plan="starter">Choose</button></div>
-      <div class="plan"><h4>Premium</h4><p>₦10,000 – ₦50,000</p><p>ROI: 50%</p><button class="btn invest-plan-btn" data-plan="premium">Choose</button></div>
-      <div class="plan"><h4>Executive</h4><p>₦50,000 – ₦500,000</p><p>ROI: 100%</p><button class="btn invest-plan-btn" data-plan="executive">Choose</button></div>
+      <div class="plans">
+        <div class="plan">
+          <h4>Starter</h4>
+          <p>₦5,000 - ₦10,000</p>
+          <p class="muted small">ROI: 20%</p>
+          <button class="btn btn-primary plan-btn" data-plan="starter">Choose Plan</button>
+        </div>
+        <div class="plan">
+          <h4>Premium</h4>
+          <p>₦5,000 - ₦50,000</p>
+          <p class="muted small">ROI: 50%</p>
+          <button class="btn btn-primary plan-btn" data-plan="premium">Choose Plan</button>
+        </div>
+        <div class="plan">
+          <h4>Executive</h4>
+          <p>₦5,000 - ₦500,000</p>
+          <p class="muted small">ROI: 100%</p>
+          <button class="btn btn-primary plan-btn" data-plan="executive">Choose Plan</button>
+        </div>
+      </div>
+
+      <div class="deposit-box">
+        <h3>Deposit Account Details</h3>
+        <p><strong>Bank:</strong> Kuda Bank</p>
+        <p><strong>Account Name:</strong> MUTECH INVESTMENT</p>
+        <p><strong>Account Number:</strong> <span id="accountNumber">2014613557</span></p>
+        <div class="deposit-actions">
+          <button class="btn btn-primary" id="copyAccountBtn">Copy Account Number</button>
+          <button class="btn btn-outline" id="submitProofBtn">Submit Proof</button>
+        </div>
+        <p id="copyMsg" class="muted small hidden mt-1">✓ Copied to clipboard</p>
+      </div>
     </div>
+  </section>
 
-    <div class="deposit-box card glass-effect">
-      <h3>Deposit Account Details</h3>
-      <p><strong>Bank:</strong> Kuda Bank</p>
-      <p><strong>Account Name:</strong> MUTECH INVESTMENT</p>
-      <p><strong>Account Number:</strong> <span id="acctNum">2014613557</span></p>
+  <section id="dashboardSection" class="hidden">
+    <div class="card">
+      <h2>Dashboard</h2>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="label">Wallet Balance</div>
+          <div class="value" id="walletBalance">₦0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Active Investments</div>
+          <div class="value" id="activeInvestments">₦0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Referral Earnings</div>
+          <div class="value" id="referralEarnings">₦0</div>
+        </div>
+      </div>
+
       <div class="deposit-actions">
-        <button id="copyAcctBtn" class="btn btn-primary">Copy Account Number</button>
-        <button id="open-deposit-modal" class="btn btn-outline">Submit Proof / Notify</button>
+        <button class="btn btn-primary" id="depositBtn">Deposit</button>
+        <button class="btn btn-outline" id="withdrawBtn">Withdraw</button>
+        <button class="btn btn-primary" id="investBtn">Invest</button>
+        <button class="btn btn-ghost" id="referralBtn">Referral</button>
       </div>
-      <p id="copyMsg" class="muted small" style="display:none;">Copied ✓</p>
-      <div id="deposit-preview" style="margin-top:8px;"></div>
+
+      <h3 class="mt-1">Investment History</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th>Amount</th>
+              <th>ROI</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="investmentHistory"></tbody>
+        </table>
+      </div>
     </div>
   </section>
 
-  <!-- DASHBOARD -->
-  <section id="dashboard" class="card hidden">
-    <h2>Dashboard</h2>
-    <div class="wallet-stats">
-      <div><small>Balance</small><div id="wallet-balance" class="big">₦0</div></div>
-      <div><small>Active Investments</small><div id="active-investments" class="big">₦0</div></div>
-      <div><small>Referral</small><div id="referral-earnings" class="big">₦0</div></div>
-    </div>
-    <div class="actions">
-      <button id="deposit-btn" class="btn btn-primary">Deposit / Upload Proof</button>
-      <button id="withdraw-btn" class="btn btn-outline">Withdraw</button>
-      <button id="invest-btn" class="btn btn-primary">Invest</button>
-      <button id="referral-btn" class="btn btn-ghost">Referral</button>
-    </div>
-    <h3>Investment History</h3>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Plan</th><th>Amount</th><th>ROI</th><th>Status</th><th>Date</th></tr></thead>
-        <tbody id="investment-history"></tbody>
-      </table>
+  <section id="adminSection" class="hidden">
+    <div class="card">
+      <h2>Admin Panel</h2>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="label">Total Users</div>
+          <div class="value" id="totalUsers">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Total Investments</div>
+          <div class="value" id="totalInvestments">₦0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Pending Deposits</div>
+          <div class="value" id="pendingDepositsCount">0</div>
+        </div>
+      </div>
+
+      <h3 class="mt-1">Pending Deposits</h3>
+      <div id="pendingDepositsList"></div>
+
+      <h3 class="mt-1">Pending Withdrawals</h3>
+      <div id="pendingWithdrawalsList"></div>
+
+      <h3 class="mt-1">Pending Investments</h3>
+      <div id="pendingInvestmentsList"></div>
+
+      <h3 class="mt-1">Registered Users</h3>
+      <div id="usersList"></div>
     </div>
   </section>
+</div>
 
-  <!-- ADMIN PANEL -->
-  <aside id="admin-panel" class="card hidden">
-    <h2>Admin Panel</h2>
-    <div class="admin-stats">
-      <div>Total users: <span id="admin-total-users">0</span></div>
-      <div>Total investments: <span id="admin-total-investments">0</span></div>
-      <div>Pending deposits: <span id="admin-pending-deposits">0</span></div>
-      <div>Pending withdrawals: <span id="admin-pending-withdrawals">0</span></div>
-    <h4>Pending Deposits</h4>
-    <div id="admin-pending-deposits-list"></div>
-
-    <h4 style="margin-top:12px">Pending Withdrawals</h4>
-    <div id="admin-pending-withdrawals-list"></div>
-
-    <h4 style="margin-top:12px">Activity (latest)</h4>
-    <div class="table-wrap small">
-      <table>
-        <thead><tr><th>User</th><th>Action</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-        <tbody id="admin-activity-log"></tbody>
-      </table>
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Login</h3>
+      <button class="close-btn" data-modal="loginModal">&times;</button>
     </div>
-  </aside>
-</div>
-
-<!-- ====================== Modals ====================== -->
-<!-- Login Modal -->
-<div id="login-modal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <header><h3>Login</h3><button class="btn-close" id="close-login">✕</button></header>
-    <form id="login-form" class="form">
-      <label>Email</label>
-      <input type="email" required />
-      <label>Password</label>
-      <input type="password" required />
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Login</button>
-        <a href="#" id="switch-to-register" class="link">Create account</a>
+    <form id="loginForm">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" required>
       </div>
-    </form>
-    <p class="muted small">Admin: <strong>admin@mutech.demo</strong> / Password: <strong>Admin123!</strong></p>
-  </div>
-</div>
-
-<!-- Register Modal -->
-<div id="register-modal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <header><h3>Register</h3><button class="btn-close" id="close-register">✕</button></header>
-    <form id="register-form" class="form">
-      <label>Email</label>
-      <input type="email" required />
-      <label>Password</label>
-      <input type="password" required />
-      <label>Referral code (optional)</label>
-      <input />
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Register</button>
-        <a href="#" id="switch-to-login" class="link">Have an account?</a>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" required>
       </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+      <p class="muted small mt-1">Don't have an account? <a href="#" id="switchToRegister" style="color: var(--accent1);">Register here</a></p>
     </form>
   </div>
 </div>
 
-<!-- Deposit Modal -->
-<div id="deposit-modal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <header><h3>Submit Deposit Proof</h3><button class="btn-close" id="close-deposit">✕</button></header>
-    <div class="form">
-      <p class="muted">Send funds to Kuda Bank • 2014613557 • MUTECH INVESTMENT</p>
+<div id="registerModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Register</h3>
+      <button class="close-btn" data-modal="registerModal">&times;</button>
+    </div>
+    <form id="registerForm">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="registerEmail" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="registerPassword" required>
+      </div>
+      <div class="form-group">
+        <label>Referral Code (Optional)</label>
+        <input type="text" id="referralCode">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+      <p class="muted small mt-1">Already have an account? <a href="#" id="switchToLogin" style="color: var(--accent1);">Login here</a></p>
+    </form>
+  </div>
+</div>
+
+<div id="depositModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Submit Deposit Proof</h3>
+      <button class="close-btn" data-modal="depositModal">&times;</button>
+    </div>
+    <p class="muted small">Transfer to: Kuda Bank • 2014613557 • MUTECH INVESTMENT</p>
+    <div class="form-group">
       <label>Amount (₦)</label>
-      <input type="number" min="1" />
-      <label>Upload proof (image)</label>
-      <input type="file" accept="image/*" />
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button class="btn btn-primary">Submit proof</button>
-        <button class="btn btn-outline">Cancel</button>
-      </div>
-      <div id="deposit-preview" style="margin-top:8px;"></div>
+      <input type="number" id="depositAmount" min="1" required>
     </div>
+    <div class="form-group">
+      <label>Upload Proof (Image)</label>
+      <input type="file" id="depositProof" accept="image/*" required>
+    </div>
+    <div id="proofPreview" class="mt-1"></div>
+    <button type="button" class="btn btn-primary" id="submitDepositBtn" style="width: 100%;">Submit Proof</button>
   </div>
 </div>
 
-<!-- Withdraw Modal -->
-<div id="withdraw-modal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <header><h3>Request Withdrawal</h3><button class="btn-close" id="close-withdraw">✕</button></header>
-    <form class="form">
-      <label>Amount (₦)</label><input type="number" min="1700" />
-      <label>Bank name</label><input type="text" />
-      <label>Account number</label><input type="text" />
-      <label>Account name</label><input type="text" />
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Request withdrawal</button>
+<div id="withdrawModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Request Withdrawal</h3>
+      <button class="close-btn" data-modal="withdrawModal">&times;</button>
+    </div>
+    <form id="withdrawForm">
+      <div class="form-group">
+        <label>Amount (₦)</label>
+        <input type="number" id="withdrawAmount" min="8000" required>
       </div>
+      <div class="form-group">
+        <label>Bank Name</label>
+        <input type="text" id="bankName" required>
+      </div>
+      <div class="form-group">
+        <label>Account Number</label>
+        <input type="text" id="accountNum" required>
+      </div>
+      <div class="form-group">
+        <label>Account Name</label>
+        <input type="text" id="accountName" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Request Withdrawal</button>
     </form>
   </div>
 </div>
 
-<!-- Invest Modal -->
-<div id="invest-modal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <header><h3>Make an investment</h3><button class="btn-close" id="close-invest">✕</button></header>
-    <div class="form">
-      <label>Plan</label>
-      <select>
-        <option value="starter">Starter</option>
-        <option value="premium">Premium</option>
-        <option value="executive">Executive</option>
-      </select>
-      <label>Amount (₦)</label>
-      <input type="number" />
-      <div class="form-actions"><button class="btn btn-primary">Invest</button></div>
+<div id="investModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Make Investment</h3>
+      <button class="close-btn" data-modal="investModal">&times;</button>
+    </div>
+    <form id="investForm">
+      <div class="form-group">
+        <label>Plan</label>
+        <select id="investPlan" required>
+          <option value="starter">Starter (₦5K-10K, 20% ROI)</option>
+          <option value="premium">Premium (₦5K-50K, 50% ROI)</option>
+          <option value="executive">Executive (₦5K-500K, 100% ROI)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Amount (₦)</label>
+        <input type="number" id="investAmount" min="5000" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Invest Now</button>
+    </form>
+  </div>
+</div>
+
+<div id="referralModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Referral Program</h3>
+      <button class="close-btn" data-modal="referralModal">&times;</button>
+    </div>
+    <div class="form-group">
+      <label>Your Referral Link</label>
+      <input type="text" id="referralLink" readonly>
+    </div>
+    <button type="button" class="btn btn-primary" id="copyReferralBtn" style="width: 100%;">Copy Link</button>
+    <div class="mt-1">
+      <p>Total Earnings: <strong id="referralTotal">₦0</strong></p>
+      <p>Total Referrals: <strong id="referralCount">0</strong></p>
     </div>
   </div>
 </div>
 
-<!-- Referral Modal -->
-<div id="referral-modal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <header><h3>Referral</h3><button class="btn-close" id="close-referral">✕</button></header>
-    <div class="form">
-      <label>Share link</label>
-      <input readonly value="https://mutech.demo/referral?user=demo" />
-      <p>Earned: ₦<span>0</span></p>
-      <p>Referrals: <span>0</span></p>
-      <div class="form-actions"><button class="btn btn-primary">Copy</button></div>
-    </div>
-  </div>
-</div>
+<script>
+(function() {
+  'use strict';
+  
+  console.log('Script starting...');
+
+  const STORAGE_KEYS = {
+    users: 'mutech_users',
+    deposits: 'mutech_deposits',
+    withdrawals: 'mutech_withdrawals',
+    pendingInvestments: 'mutech_pending_investments',
+    currentUser: 'mutech_current_user'
+  };
+
+  function initStorage() {
+    console.log('Initializing storage...');
+    if (!localStorage.getItem(STORAGE_KEYS.users)) {
+      const initialUsers = {
+        'declantessa@gmail.com': {
+          email: 'declantessa@gmail.com',
+          password: 'BAMIDELE!1',
+          wallet: 0,
+          investments: [],
+          referralCode: 'ADMIN001',
+          referralEarnings: 0,
+          referredBy: null,
+          isAdmin: true
+        }
+      };
+      localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(initialUsers));
+      console.log('Admin account created');
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.deposits)) {
+      localStorage.setItem(STORAGE_KEYS.deposits, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.withdrawals)) {
+      localStorage.setItem(STORAGE_KEYS.withdrawals, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.pendingInvestments)) {
+      localStorage.setItem(STORAGE_KEYS.pendingInvestments, JSON.stringify([]));
+    }
+  }
+
+  function getUsers() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || {};
+  }
+
+  function saveUsers(users) {
+    localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users));
+  }
+
+  function getDeposits() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.deposits)) || [];
+  }
+
+  function saveDeposits(deposits) {
+    localStorage.setItem(STORAGE_KEYS.deposits, JSON.stringify(deposits));
+  }
+
+  function getWithdrawals() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.withdrawals)) || [];
+  }
+
+  function saveWithdrawals(withdrawals) {
+    localStorage.setItem(STORAGE_KEYS.withdrawals, JSON.stringify(withdrawals));
+  }
+
+  function getPendingInvestments() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.pendingInvestments)) || [];
+  }
+
+  function savePendingInvestments(list) {
+    localStorage.setItem(STORAGE_KEYS.pendingInvestments, JSON.stringify(list));
+  }
+
+  function getCurrentUser() {
+    return localStorage.getItem(STORAGE_KEYS.currentUser);
+  }
+
+  function setCurrentUser(email) {
+    localStorage.setItem(STORAGE_KEYS.currentUser, email);
+  }
+
+  function clearCurrentUser() {
+    localStorage.removeItem(STORAGE_KEYS.currentUser);
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', function() {
+    console.log('Theme toggle clicked');
+    document.body.classList.toggle('light-mode');
+    themeToggle.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+  });
+
+  // Modal controls
+  document.querySelectorAll('.close-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      console.log('Close button clicked');
+      const modalId = btn.getAttribute('data-modal');
+      document.getElementById(modalId).classList.remove('active');
+    });
+  });
+
+  document.querySelectorAll('.modal').forEach(function(modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+  });
+
+  // Auth buttons
+  document.getElementById('loginBtn').addEventListener('click', function() {
+    console.log('Login button clicked');
+    document.getElementById('loginModal').classList.add('active');
+  });
+
+  document.getElementById('registerBtn').addEventListener('click', function() {
+    console.log('Register button clicked');
+    document.getElementById('registerModal').classList.add('active');
+  });
+
+  document.getElementById('switchToRegister').addEventListener('click', function(e) {
+    e.preventDefault();
+    console.log('Switching to register');
+    document.getElementById('loginModal').classList.remove('active');
+    document.getElementById('registerModal').classList.add('active');
+  });
+
+  document.getElementById('switchToLogin').addEventListener('click', function(e) {
+    e.preventDefault();
+    console.log('Switching to login');
+    document.getElementById('registerModal').classList.remove('active');
+    document.getElementById('loginModal').classList.add('active');
+  });
+
+  // Register form
+  const registerForm = document.getElementById('registerForm');
+  if (registerForm) {
+    registerForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Register form submitted');
+      
+      const emailInput = document.getElementById('registerEmail');
+      const passwordInput = document.getElementById('registerPassword');
+      const referralInput = document.getElementById('referralCode');
+      
+      const email = emailInput.value.toLowerCase().trim();
+      const password = passwordInput.value;
+      const referralCode = referralInput.value.trim();
+
+      console.log('Registering user:', email);
+
+      if (!email || !password) {
+        alert('Please fill in all required fields!');
+        return false;
+      }
+
+      const users = getUsers();
+      
+      if (users[email]) {
+        alert('User already exists! Please login instead.');
+        document.getElementById('registerModal').classList.remove('active');
+        document.getElementById('loginModal').classList.add('active');
+        return false;
+      }
+
+      const newUser = {
+        email: email,
+        password: password,
+        wallet: 1000,
+        investments: [],
+        referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+        referralEarnings: 0,
+        referredBy: referralCode || null,
+        isAdmin: false
+      };
+
+      if (referralCode) {
+        const referrer = Object.values(users).find(function(u) { return u.referralCode === referralCode; });
+        if (referrer) {
+          referrer.referralEarnings += 200;
+          referrer.wallet += 200;
+          users[referrer.email] = referrer;
+          newUser.wallet += 200;
+        }
+      }
+
+      users[email] = newUser;
+      saveUsers(users);
+      
+      console.log('User registered successfully');
+      
+      // Auto login
+      setCurrentUser(email);
+      document.getElementById('registerModal').classList.remove('active');
+      registerForm.reset();
+      
+      alert('Registration successful! Welcome to MUTECH!');
+      
+      // Load dashboard
+      setTimeout(function() {
+        loadDashboard();
+      }, 100);
+      
+      return false;
+    });
+  }
+
+  // Login form
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Login form submitted');
+      
+      const emailInput = document.getElementById('loginEmail');
+      const passwordInput = document.getElementById('loginPassword');
+      
+      const email = emailInput.value.toLowerCase().trim();
+      const password = passwordInput.value;
+
+      console.log('Logging in:', email);
+
+      if (!email || !password) {
+        alert('Please enter both email and password!');
+        return false;
+      }
+
+      const users = getUsers();
+      const user = users[email];
+
+      if (user && user.password === password) {
+        console.log('Login successful');
+        setCurrentUser(email);
+        
+        document.getElementById('loginModal').classList.remove('active');
+        loginForm.reset();
+        
+        if (user.isAdmin === true) {
+          console.log('Loading admin panel');
+          alert('Welcome Admin!');
+          setTimeout(function() {
+            loadAdminPanel();
+          }, 100);
+        } else {
+          console.log('Loading dashboard');
+          alert('Welcome back!');
+          setTimeout(function() {
+            loadDashboard();
+          }, 100);
+        }
+      } else {
+        alert('Invalid email or password! Please try again.');
+      }
+      
+      return false;
+    });
+  }
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', function() {
+    console.log('Logout clicked');
+    clearCurrentUser();
+    location.reload();
+  });
+
+  function loadDashboard() {
+    console.log('Loading dashboard...');
+    const email = getCurrentUser();
+    const users = getUsers();
+    const user = users[email];
+
+    if (!user) {
+      console.error('User not found');
+      return;
+    }
+
+    document.getElementById('authButtons').classList.add('hidden');
+    document.getElementById('userInfo').classList.remove('hidden');
+    document.getElementById('username').textContent = email;
+    document.getElementById('landingSection').classList.add('hidden');
+    document.getElementById('dashboardSection').classList.remove('hidden');
+    document.getElementById('adminSection').classList.add('hidden');
+    document.getElementById('adminBtn').classList.add('hidden');
+
+    document.getElementById('walletBalance').textContent = '₦' + user.wallet.toLocaleString();
+    const totalInvested = user.investments.reduce(function(sum, inv) { return sum + inv.amount; }, 0);
+    document.getElementById('activeInvestments').textContent = '₦' + totalInvested.toLocaleString();
+    document.getElementById('referralEarnings').textContent = '₦' + user.referralEarnings.toLocaleString();
+
+    const tbody = document.getElementById('investmentHistory');
+    tbody.innerHTML = '';
+    user.investments.forEach(function(inv) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + inv.plan.charAt(0).toUpperCase() + inv.plan.slice(1) + '</td><td>₦' + inv.amount.toLocaleString() + '</td><td>' + inv.roi + '%</td><td>' + inv.date + '</td><td>' + inv.status + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    console.log('Dashboard loaded successfully');
+  }
+
+  function loadAdminPanel() {
+    console.log('Loading admin panel...');
+    const email = getCurrentUser();
+    const allUsers = getUsers();
+    const user = allUsers[email];
+    
+    if (!user || !user.isAdmin) {
+      alert('Access denied!');
+      clearCurrentUser();
+      location.reload();
+      return;
+    }
+
+    document.getElementById('authButtons').classList.add('hidden');
+    document.getElementById('userInfo').classList.remove('hidden');
+    document.getElementById('username').textContent = 'Admin';
+    document.getElementById('landingSection').classList.add('hidden');
+    document.getElementById('dashboardSection').classList.add('hidden');
+    document.getElementById('adminSection').classList.remove('hidden');
+    document.getElementById('adminBtn').classList.remove('hidden');
+
+    const deposits = getDeposits();
+    const withdrawals = getWithdrawals();
+    const pendingInvestments = getPendingInvestments();
+
+    document.getElementById('totalUsers').textContent = Object.keys(allUsers).length;
+    const totalInv = Object.values(allUsers).reduce(function(sum, u) {
+      return sum + (u.investments || []).reduce(function(s, inv) { return s + inv.amount; }, 0);
+    }, 0);
+    document.getElementById('totalInvestments').textContent = '₦' + totalInv.toLocaleString();
+    document.getElementById('pendingDepositsCount').textContent = deposits.filter(function(d) { return d.status === 'pending'; }).length;
+
+    const depositsList = document.getElementById('pendingDepositsList');
+    depositsList.innerHTML = '';
+    deposits.filter(function(d) { return d.status === 'pending'; }).forEach(function(deposit, idx) {
+      const div = document.createElement('div');
+      div.className = 'admin-item';
+      div.innerHTML = '<p><strong>' + deposit.email + '</strong></p><p>Amount: ₦' + deposit.amount.toLocaleString() + '</p><p class="small muted">' + deposit.date + '</p>' + (deposit.proofData ? '<img src="' + deposit.proofData + '" style="max-width: 200px; border-radius: 8px; margin: 0.5rem 0;">' : '') + '<div class="admin-actions"><button class="btn btn-primary" onclick="approveDeposit(' + idx + ')">Approve</button><button class="btn btn-outline" onclick="rejectDeposit(' + idx + ')">Reject</button></div>';
+      depositsList.appendChild(div);
+    });
+
+    const withdrawalsList = document.getElementById('pendingWithdrawalsList');
+    withdrawalsList.innerHTML = '';
+    withdrawals.filter(function(w) { return w.status === 'pending'; }).forEach(function(withdrawal, idx) {
+      const div = document.createElement('div');
+      div.className = 'admin-item';
+      div.innerHTML = '<p><strong>' + withdrawal.email + '</strong></p><p>Amount: ₦' + withdrawal.amount.toLocaleString() + '</p><p>Bank: ' + withdrawal.bankName + '</p><p>Account: ' + withdrawal.accountNumber + ' - ' + withdrawal.accountName + '</p><p class="small muted">' + withdrawal.date + '</p><div class="admin-actions"><button class="btn btn-primary" onclick="approveWithdrawal(' + idx + ')">Approve</button></div>';
+      withdrawalsList.appendChild(div);
+    });
+
+    const pendingInvestmentsList = document.getElementById('pendingInvestmentsList');
+    pendingInvestmentsList.innerHTML = '';
+    pendingInvestments.filter(function(p) { return p.status === 'pending'; }).forEach(function(pending, idx) {
+      const div = document.createElement('div');
+      div.className = 'admin-item';
+      div.innerHTML = '<p><strong>' + pending.email + '</strong></p><p>Plan: ' + pending.plan.charAt(0).toUpperCase() + pending.plan.slice(1) + '</p><p>Amount: ₦' + pending.amount.toLocaleString() + '</p><p class="small muted">' + pending.date + '</p><div class="admin-actions"><button class="btn btn-primary" onclick="approveInvestment(' + idx + ')">Approve</button><button class="btn btn-outline" onclick="rejectInvestment(' + idx + ')">Reject</button></div>';
+      pendingInvestmentsList.appendChild(div);
+    });
+
+    // Show all users with passwords
+    const usersList = document.getElementById('usersList');
+    usersList.innerHTML = '';
+
+    Object.values(allUsers).forEach(function(u) {
+      const div = document.createElement('div');
+      div.className = 'admin-item';
+      div.innerHTML = `
+        <p><strong>${u.email}</strong></p>
+        <p>Password: <strong>${u.password}</strong></p>
+        <p>Wallet: ₦${u.wallet.toLocaleString()}</p>
+        <p>Referral Code: ${u.referralCode}</p>
+        <p>Referral Earnings: ₦${u.referralEarnings.toLocaleString()}</p>
+        <p>Total Investments: ${u.investments.length}</p>
+      `;
+      usersList.appendChild(div);
+    });
+
+    console.log('Admin panel loaded successfully');
+  }
+
+  window.approveDeposit = function(idx) {
+    console.log('Approving deposit:', idx);
+    const deposits = getDeposits();
+    const deposit = deposits[idx];
+    
+    if (deposit.status !== 'pending') return;
+    
+    const users = getUsers();
+    if (users[deposit.email]) {
+      users[deposit.email].wallet += deposit.amount;
+      saveUsers(users);
+    }
+    
+    deposits[idx].status = 'approved';
+    saveDeposits(deposits);
+    
+    alert('Deposit approved!');
+    loadAdminPanel();
+  };
+
+  window.rejectDeposit = function(idx) {
+    console.log('Rejecting deposit:', idx);
+    const deposits = getDeposits();
+    deposits[idx].status = 'rejected';
+    saveDeposits(deposits);
+    
+    alert('Deposit rejected!');
+    loadAdminPanel();
+  };
+
+  window.approveWithdrawal = function(idx) {
+    console.log('Approving withdrawal:', idx);
+    const withdrawals = getWithdrawals();
+    withdrawals[idx].status = 'approved';
+    saveWithdrawals(withdrawals);
+    
+    alert('Withdrawal approved!');
+    loadAdminPanel();
+  };
+
+  // Investment approval handlers
+  window.approveInvestment = function(idx) {
+    console.log('Approving investment:', idx);
+    const pending = getPendingInvestments();
+    if (!pending[idx] || pending[idx].status !== 'pending') return;
+
+    const invest = pending[idx];
+    const users = getUsers();
+
+    if (users[invest.email]) {
+      // Move to user's investments as active
+      const invObj = {
+        plan: invest.plan,
+        amount: invest.amount,
+        roi: invest.roi,
+        date: new Date().toLocaleDateString(),
+        status: 'Active'
+      };
+      users[invest.email].investments.push(invObj);
+      saveUsers(users);
+
+      pending[idx].status = 'approved';
+      savePendingInvestments(pending);
+
+      alert('Investment approved and activated!');
+      loadAdminPanel();
+    } else {
+      alert('User not found for this investment.');
+    }
+  };
+
+  window.rejectInvestment = function(idx) {
+    console.log('Rejecting investment:', idx);
+    const pending = getPendingInvestments();
+    if (!pending[idx] || pending[idx].status !== 'pending') return;
+
+    const invest = pending[idx];
+    const users = getUsers();
+
+    if (users[invest.email]) {
+      // refund amount to user wallet
+      users[invest.email].wallet += invest.amount;
+      saveUsers(users);
+
+      pending[idx].status = 'rejected';
+      savePendingInvestments(pending);
+
+      alert('Investment rejected. Amount refunded to user wallet.');
+      loadAdminPanel();
+    } else {
+      alert('User not found for this investment.');
+    }
+  };
+
+  // Dashboard action buttons
+  document.getElementById('depositBtn').addEventListener('click', function() {
+    console.log('Deposit button clicked');
+    document.getElementById('depositModal').classList.add('active');
+  });
+
+  document.getElementById('submitProofBtn').addEventListener('click', function() {
+    console.log('Submit proof button clicked');
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      alert('Please login first!');
+      document.getElementById('loginModal').classList.add('active');
+      return;
+    }
+    document.getElementById('depositModal').classList.add('active');
+  });
+
+  document.getElementById('withdrawBtn').addEventListener('click', function() {
+    console.log('Withdraw button clicked');
+    document.getElementById('withdrawModal').classList.add('active');
+  });
+
+  document.getElementById('investBtn').addEventListener('click', function() {
+    console.log('Invest button clicked');
+    document.getElementById('investModal').classList.add('active');
+  });
+
+  document.getElementById('referralBtn').addEventListener('click', function() {
+    console.log('Referral button clicked');
+    const email = getCurrentUser();
+    const users = getUsers();
+    const user = users[email];
+    
+    document.getElementById('referralLink').value = window.location.origin + window.location.pathname + '?ref=' + user.referralCode;
+    document.getElementById('referralTotal').textContent = '₦' + user.referralEarnings.toLocaleString();
+    
+    const referralCount = Object.values(users).filter(function(u) { return u.referredBy === user.referralCode; }).length;
+    document.getElementById('referralCount').textContent = referralCount;
+    
+    document.getElementById('referralModal').classList.add('active');
+  });
+
+  // Plan buttons
+  document.querySelectorAll('.plan-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      console.log('Plan button clicked');
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        alert('Please login first to choose a plan!');
+        document.getElementById('loginModal').classList.add('active');
+        return;
+      }
+      const plan = btn.getAttribute('data-plan');
+      document.getElementById('investPlan').value = plan;
+      document.getElementById('investModal').classList.add('active');
+    });
+  });
+
+  // Copy account number
+  document.getElementById('copyAccountBtn').addEventListener('click', function() {
+    console.log('Copy account button clicked');
+    const accountNumber = document.getElementById('accountNumber').textContent;
+    navigator.clipboard.writeText(accountNumber).then(function() {
+      const msg = document.getElementById('copyMsg');
+      msg.classList.remove('hidden');
+      setTimeout(function() { msg.classList.add('hidden'); }, 2000);
+    });
+  });
+
+  // Copy referral link
+  document.getElementById('copyReferralBtn').addEventListener('click', function() {
+    console.log('Copy referral button clicked');
+    const link = document.getElementById('referralLink');
+    link.select();
+    navigator.clipboard.writeText(link.value).then(function() {
+      alert('Referral link copied!');
+    });
+  });
+
+  // Deposit proof preview
+  document.getElementById('depositProof').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const preview = document.getElementById('proofPreview');
+        preview.innerHTML = '<img src="' + event.target.result + '" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Submit deposit
+  document.getElementById('submitDepositBtn').addEventListener('click', function() {
+    console.log('Submit deposit button clicked');
+    const amount = parseFloat(document.getElementById('depositAmount').value);
+    const proofFile = document.getElementById('depositProof').files[0];
+    
+    if (!amount || amount <= 0) {
+      alert('Please enter a valid amount!');
+      return;
+    }
+    
+    if (!proofFile) {
+      alert('Please upload proof of payment!');
+      return;
+    }
+    
+    const email = getCurrentUser();
+    if (!email) {
+      alert('Please login first!');
+      document.getElementById('depositModal').classList.remove('active');
+      document.getElementById('loginModal').classList.add('active');
+      return;
+    }
+
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      const deposits = getDeposits();
+      deposits.push({
+        email: email,
+        amount: amount,
+        proofData: e.target.result,
+        date: new Date().toLocaleString(),
+        status: 'pending'
+      });
+      saveDeposits(deposits);
+      
+      alert('Deposit proof submitted! Waiting for admin approval.');
+      document.getElementById('depositModal').classList.remove('active');
+      document.getElementById('depositAmount').value = '';
+      document.getElementById('depositProof').value = '';
+      document.getElementById('proofPreview').innerHTML = '';
+    };
+    
+    reader.readAsDataURL(proofFile);
+  });
+
+  // Withdraw form
+  document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    console.log('Withdraw form submitted');
+    
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    const bankName = document.getElementById('bankName').value;
+    const accountNumber = document.getElementById('accountNum').value;
+    const accountName = document.getElementById('accountName').value;
+    
+    if (amount < 8000) {
+      alert('Minimum withdrawal is ₦8,000');
+      return;
+    }
+    
+    const email = getCurrentUser();
+    const users = getUsers();
+    const user = users[email];
+    
+    if (amount > user.wallet) {
+      alert('Insufficient balance!');
+      return;
+    }
+    
+    user.wallet -= amount;
+    users[email] = user;
+    saveUsers(users);
+    
+    const withdrawals = getWithdrawals();
+    withdrawals.push({
+      email: email,
+      amount: amount,
+      bankName: bankName,
+      accountNumber: accountNumber,
+      accountName: accountName,
+      date: new Date().toLocaleDateString(),
+      status: 'pending'
+    });
+    saveWithdrawals(withdrawals);
+    
+    alert('Withdrawal request submitted!');
+    document.getElementById('withdrawModal').classList.remove('active');
+    document.getElementById('withdrawForm').reset();
+    loadDashboard();
+  });
+
+  // Invest form
+  document.getElementById('investForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    console.log('Invest form submitted');
+    
+    const plan = document.getElementById('investPlan').value;
+    const amount = parseFloat(document.getElementById('investAmount').value);
+    
+    const planDetails = {
+      starter: { min: 5000, max: 10000, roi: 20 },
+      premium: { min: 5000, max: 50000, roi: 50 },
+      executive: { min: 5000, max: 500000, roi: 100 }
+    };
+    
+    const details = planDetails[plan];
+    
+    if (!details) {
+      alert('Invalid plan selected');
+      return;
+    }
+    
+    if (amount < details.min || amount > details.max) {
+      alert('Amount must be between ₦' + details.min.toLocaleString() + ' and ₦' + details.max.toLocaleString());
+      return;
+    }
+    
+    const email = getCurrentUser();
+    const users = getUsers();
+    const user = users[email];
+    
+    if (!user) {
+      alert('Please login first!');
+      return;
+    }
+    
+    if (amount > user.wallet) {
+      alert('Insufficient balance!');
+      return;
+    }
+    
+    // Deduct immediately but mark investment as pending until admin approves
+    user.wallet -= amount;
+    users[email] = user;
+    saveUsers(users);
+
+    const pending = getPendingInvestments();
+    pending.push({
+      email: email,
+      plan: plan,
+      amount: amount,
+      roi: details.roi,
+      date: new Date().toLocaleString(),
+      status: 'pending'
+    });
+    savePendingInvestments(pending);
+    
+    alert('Investment submitted for admin approval!');
+    document.getElementById('investModal').classList.remove('active');
+    document.getElementById('investForm').reset();
+    loadDashboard();
+  });
+
+  // Admin panel toggle
+  document.getElementById('adminBtn').addEventListener('click', function() {
+    console.log('Admin button clicked');
+    loadAdminPanel();
+  });
+
+  // Initialize
+  initStorage();
+  console.log('Storage initialized');
+
+  // Check if user is logged in
+  const currentUser = getCurrentUser();
+  if (currentUser) {
+    console.log('User already logged in:', currentUser);
+    const users = getUsers();
+    const user = users[currentUser];
+    
+    if (user && user.isAdmin === true) {
+      loadAdminPanel();
+    } else if (user) {
+      loadDashboard();
+    }
+  } else {
+    console.log('No user logged in');
+  }
+
+  console.log('Script loaded successfully!');
+})();
+</script>
 
 </body>
-</html>
+            </html>
